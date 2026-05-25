@@ -1,0 +1,32 @@
+# Virtual Environment
+venv/
+.venv/
+env/
+ENV/
+
+# Python Cache & Testing
+**/__pycache__/
+**/*.pyc
+**/*.pyo
+**/*.pyd
+.pytest_cache/
+.pytest/
+htmlcov/
+.tox/
+.coverage
+.cache
+
+# SQLite Databases
+*.db
+*.db-journal
+*.db-shm
+*.db-wal
+backend/daily_task.db
+daily_task.db
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Docker files
+.docker-compose.env

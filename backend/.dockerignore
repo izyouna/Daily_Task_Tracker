@@ -1,0 +1,21 @@
+# Ignore local sqlite databases
+*.db
+*.db-journal
+*.db-shm
+*.db-wal
+daily_task.db
+
+# Ignore tests & caches
+.pytest_cache/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Ignore local files
+venv/
+.venv/
+.git
+.gitignore
+Dockerfile
+.dockerignore
