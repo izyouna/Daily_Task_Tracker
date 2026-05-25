@@ -31,12 +31,14 @@ class AuthProvider with ChangeNotifier {
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         ApiService.token = data['access_token'] as String;
-        
+
         // Fetch user profile info
         return await fetchProfile();
       } else {
         final data = jsonDecode(response.body);
-        _error = data['detail'] is String ? data['detail'] as String : 'Login failed. Please try again.';
+        _error = data['detail'] is String
+            ? data['detail'] as String
+            : 'Login failed. Please try again.';
         _isLoading = false;
         notifyListeners();
         return false;
@@ -66,7 +68,9 @@ class AuthProvider with ChangeNotifier {
         return true;
       } else {
         final data = jsonDecode(response.body);
-        _error = data['detail'] is String ? data['detail'] as String : 'Registration failed. Please try again.';
+        _error = data['detail'] is String
+            ? data['detail'] as String
+            : 'Registration failed. Please try again.';
         _isLoading = false;
         notifyListeners();
         return false;
@@ -83,7 +87,9 @@ class AuthProvider with ChangeNotifier {
     try {
       final response = await ApiService.get('/auth/me');
       if (response.statusCode == 200) {
-        _user = User.fromJson(jsonDecode(response.body) as Map<String, dynamic>);
+        _user = User.fromJson(
+          jsonDecode(response.body) as Map<String, dynamic>,
+        );
         _isLoading = false;
         notifyListeners();
         return true;

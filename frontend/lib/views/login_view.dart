@@ -1,8 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../providers/auth_provider.dart';
 import 'dashboard_view.dart';
 import 'register_view.dart';
+
+class RetroGridPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = const Color(0xFFEFE9DB) // Grid lines
+      ..strokeWidth = 1.0;
+    
+    const double step = 25.0;
+    for (double x = 0; x < size.width; x += step) {
+      canvas.drawLine(Offset(x, 0), Offset(x, size.height), paint);
+    }
+    for (double y = 0; y < size.height; y += step) {
+      canvas.drawLine(Offset(0, y), Offset(size.width, y), paint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+}
 
 class LoginView extends StatefulWidget {
   const LoginView({super.key});
@@ -40,8 +61,18 @@ class _LoginViewState extends State<LoginView> {
     } else if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(authProvider.error ?? 'Authentication failed'),
-          backgroundColor: Colors.redAccent,
+          content: Text(
+            authProvider.error ?? 'Authentication failed',
+            style: GoogleFonts.vt323(fontSize: 16),
+          ),
+          backgroundColor: const Color(0xFFFF5252),
+          behavior: SnackBarBehavior.floating,
+          shape: const Border(
+            top: BorderSide(color: Colors.black, width: 2),
+            bottom: BorderSide(color: Colors.black, width: 2),
+            left: BorderSide(color: Colors.black, width: 2),
+            right: BorderSide(color: Colors.black, width: 2),
+          ),
         ),
       );
     }
@@ -52,203 +83,171 @@ class _LoginViewState extends State<LoginView> {
     final authProvider = context.watch<AuthProvider>();
 
     return Scaffold(
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Color(0xFF0F2027), Color(0xFF203A43), Color(0xFF2C5364)],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
+      body: Stack(
+        children: [
+          // Retro Grid Background
+          Positioned.fill(
+            child: CustomPaint(
+              painter: RetroGridPainter(),
+            ),
           ),
-        ),
-        child: Center(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 28.0),
-            child: Card(
-              color: Colors.white.withOpacity(0.09),
-              elevation: 20,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(24),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(32.0),
-                child: Form(
-                  key: _formKey,
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      // Header Logo / Icon
-                      Container(
-                        padding: const EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                          color: Colors.cyanAccent.withOpacity(0.1),
-                          shape: BoxShape.circle,
-                        ),
-                        child: const Icon(
-                          Icons.task_alt_rounded,
-                          size: 64,
-                          color: Colors.cyanAccent,
-                        ),
-                      ),
-                      const SizedBox(height: 20),
-                      const Text(
-                        "Daily Tasks",
-                        style: TextStyle(
-                          fontSize: 28,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                          letterSpacing: 1.2,
-                        ),
-                      ),
-                      const SizedBox(height: 6),
-                      Text(
-                        "Manage your routine efficiently",
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.white.withOpacity(0.6),
-                        ),
-                      ),
-                      const SizedBox(height: 32),
-                      
-                      // Email Field
-                      TextFormField(
-                        controller: _emailController,
-                        style: const TextStyle(color: Colors.white),
-                        decoration: InputDecoration(
-                          hintText: "Email Address",
-                          hintStyle: TextStyle(color: Colors.white.withOpacity(0.5)),
-                          prefixIcon: const Icon(Icons.email_outlined, color: Colors.cyanAccent),
-                          filled: true,
-                          fillColor: Colors.white.withOpacity(0.05),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(16),
-                            borderSide: BorderSide.none,
+          Center(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 28.0),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  border: Border.all(color: Colors.black, width: 3),
+                  boxShadow: const [
+                    BoxShadow(
+                      color: Colors.black,
+                      offset: Offset(6, 6),
+                    ),
+                  ],
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(28.0),
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        // Header Logo Box
+                        Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFFFEB3B), // Retro Yellow
+                            border: Border.all(color: Colors.black, width: 2.5),
                           ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(16),
-                            borderSide: const BorderSide(color: Colors.cyanAccent, width: 1.5),
+                          child: const Icon(
+                            Icons.task_alt_rounded,
+                            size: 48,
+                            color: Colors.black,
                           ),
                         ),
-                        keyboardType: TextInputType.emailAddress,
-                        validator: (value) {
-                          if (value == null || value.trim().isEmpty || !value.contains('@')) {
-                            return 'Please enter a valid email';
-                          }
-                          return null;
-                        },
-                      ),
-                      const SizedBox(height: 20),
-                      
-                      // Password Field
-                      TextFormField(
-                        controller: _passwordController,
-                        obscureText: _obscurePassword,
-                        style: const TextStyle(color: Colors.white),
-                        decoration: InputDecoration(
-                          hintText: "Password",
-                          hintStyle: TextStyle(color: Colors.white.withOpacity(0.5)),
-                          prefixIcon: const Icon(Icons.lock_outlined, color: Colors.cyanAccent),
-                          suffixIcon: IconButton(
-                            icon: Icon(
-                              _obscurePassword ? Icons.visibility_off_outlined : Icons.visibility_outlined,
-                              color: Colors.cyanAccent.withOpacity(0.7),
-                            ),
-                            onPressed: () {
-                              setState(() {
-                                _obscurePassword = !_obscurePassword;
-                              });
-                            },
-                          ),
-                          filled: true,
-                          fillColor: Colors.white.withOpacity(0.05),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(16),
-                            borderSide: BorderSide.none,
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(16),
-                            borderSide: const BorderSide(color: Colors.cyanAccent, width: 1.5),
+                        const SizedBox(height: 20),
+                        Text(
+                          "DAILY TASKS",
+                          style: GoogleFonts.pressStart2p(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
                           ),
                         ),
-                        validator: (value) {
-                          if (value == null || value.length < 6) {
-                            return 'Password must be at least 6 characters';
-                          }
-                          return null;
-                        },
-                      ),
-                      const SizedBox(height: 32),
-                      
-                      // Login Button
-                      authProvider.isLoading
-                          ? const CircularProgressIndicator(color: Colors.cyanAccent)
-                          : Container(
-                              width: double.infinity,
-                              height: 55,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(16),
-                                gradient: const LinearGradient(
-                                  colors: [Colors.cyan, Colors.tealAccent],
-                                ),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.cyanAccent.withOpacity(0.3),
-                                    blurRadius: 10,
-                                    offset: const Offset(0, 5),
-                                  )
-                                ],
+                        const SizedBox(height: 8),
+                        Text(
+                          "LEVEL UP YOUR PRODUCTIVITY",
+                          style: GoogleFonts.vt323(
+                            fontSize: 18,
+                            color: Colors.black54,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(height: 28),
+                        
+                        // Email Field
+                        TextFormField(
+                          controller: _emailController,
+                          style: GoogleFonts.vt323(color: Colors.black, fontSize: 18, fontWeight: FontWeight.bold),
+                          decoration: const InputDecoration(
+                            hintText: "EMAIL ADDRESS",
+                            prefixIcon: Icon(Icons.email_outlined, color: Colors.black),
+                          ),
+                          keyboardType: TextInputType.emailAddress,
+                          validator: (value) {
+                            if (value == null || value.trim().isEmpty || !value.contains('@')) {
+                              return 'Please enter a valid email';
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 16),
+                        
+                        // Password Field
+                        TextFormField(
+                          controller: _passwordController,
+                          obscureText: _obscurePassword,
+                          style: GoogleFonts.vt323(color: Colors.black, fontSize: 18, fontWeight: FontWeight.bold),
+                          decoration: InputDecoration(
+                            hintText: "PASSWORD",
+                            prefixIcon: const Icon(Icons.lock_outlined, color: Colors.black),
+                            suffixIcon: IconButton(
+                              icon: Icon(
+                                _obscurePassword ? Icons.visibility_off_outlined : Icons.visibility_outlined,
+                                color: Colors.black,
                               ),
-                              child: ElevatedButton(
-                                onPressed: _submit,
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.transparent,
-                                  shadowColor: Colors.transparent,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(16),
+                              onPressed: () {
+                                setState(() {
+                                  _obscurePassword = !_obscurePassword;
+                                });
+                              },
+                            ),
+                          ),
+                          validator: (value) {
+                            if (value == null || value.length < 6) {
+                              return 'Password must be at least 6 characters';
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 28),
+                        
+                        // Login Button
+                        authProvider.isLoading
+                            ? const CircularProgressIndicator(color: Colors.black)
+                            : Container(
+                                decoration: const BoxDecoration(
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black,
+                                      offset: Offset(4, 4),
+                                    ),
+                                  ],
+                                ),
+                                child: ElevatedButton(
+                                  onPressed: _submit,
+                                  style: ElevatedButton.styleFrom(
+                                    minimumSize: const Size(double.infinity, 50),
                                   ),
-                                ),
-                                child: const Text(
-                                  "Login",
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                    color: Color(0xFF0F2027),
-                                  ),
+                                  child: const Text("PRESS START"),
                                 ),
                               ),
+                        const SizedBox(height: 24),
+                        
+                        // Register Switch Link
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              "NEW HERO? ",
+                              style: GoogleFonts.vt323(color: Colors.black87, fontSize: 16),
                             ),
-                      const SizedBox(height: 24),
-                      
-                      // Register Switch Link
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            "Don't have an account? ",
-                            style: TextStyle(color: Colors.white.withOpacity(0.6)),
-                          ),
-                          GestureDetector(
-                            onTap: () {
-                              Navigator.of(context).push(
-                                MaterialPageRoute(builder: (_) => const RegisterView()),
-                              );
-                            },
-                            child: const Text(
-                              "Sign Up",
-                              style: TextStyle(
-                                color: Colors.cyanAccent,
-                                fontWeight: FontWeight.bold,
+                            GestureDetector(
+                              onTap: () {
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(builder: (_) => const RegisterView()),
+                                );
+                              },
+                              child: Text(
+                                "CREATE SAVE FILE",
+                                style: GoogleFonts.vt323(
+                                  color: const Color(0xFFE74C3C), // Retro Red
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16,
+                                  decoration: TextDecoration.underline,
+                                ),
                               ),
-                            ),
-                          )
-                        ],
-                      )
-                    ],
+                            )
+                          ],
+                        )
+                      ],
+                    ),
                   ),
                 ),
               ),
             ),
           ),
-        ),
+        ],
       ),
     );
   }
